@@ -1,0 +1,10 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: phase3_try
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/phase22?serverTimezone=UTC
+    username: 'root'
+    password: 'mysqlroot123root'
