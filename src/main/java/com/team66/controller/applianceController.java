@@ -47,8 +47,7 @@ public class applianceController {
     }
 
     @PostMapping("/add")
-    public void addAppliance(@RequestBody Map<String, Object> queryMap) {
-        String email = (String) queryMap.get("email");
+    public void addAppliance(@CookieValue(value = "cookieEmail") String email, @RequestBody Map<String, Object> queryMap) {
         Integer applianceNum = (Integer) queryMap.get("applianceNum");
         Integer btu = (Integer) queryMap.get("btu");
         String modelName = (String) queryMap.get("modelName");
@@ -56,13 +55,13 @@ public class applianceController {
         applianceService.addAppliance(new appliance(email, applianceNum, btu, modelName, manufacturerName));
 
         String applianceType = (String) queryMap.get("applianceType");
-        if(applianceType == "Water Heater") {
+        if(applianceType.equals("Water Heater")) {
             String energySource = (String) queryMap.get("energySource");
             Double capacity = (Double) queryMap.get("capacity");
             Integer currentTemperatureSetting = (Integer) queryMap.get("currentTemperatureSetting");
             waterHeaterService.addWaterHeater(new waterHeater(email, applianceNum, energySource, capacity, currentTemperatureSetting));
         }
-        else if(applianceType == "Air Handler") {
+        else if(applianceType.equals("Air Handler")) {
             airHandlerService.addAirHandler(new airHandler(email, applianceNum));
             String airConditioner = (String) queryMap.get("airConditioner");
             String heater = (String) queryMap.get("heater");
@@ -83,15 +82,13 @@ public class applianceController {
         }
     }
 
-    @GetMapping("/view/{email}")
-    public List<Map<String, Object>> viewAppliance(@PathVariable String email) {
+    @GetMapping("/view")
+    public List<Map<String, Object>> viewAppliance(@CookieValue(value = "cookieEmail") String email) {
         return applianceService.viewAppliance(email);
     }
 
-    @DeleteMapping("/delete")
-    public List<Map<String, Object>> deleteAppliance(@RequestBody Map<String, Object> queryMap) {
-        String email = (String) queryMap.get("email");
-        Integer applianceNum = (Integer) queryMap.get("applianceNum");
+    @DeleteMapping("/delete/{applianceNum}")
+    public List<Map<String, Object>> deleteAppliance(@CookieValue(value = "cookieEmail") String email, @PathVariable Integer applianceNum) {
         applianceService.deleteAppliance(email, applianceNum);
         return applianceService.viewAppliance(email);
     }

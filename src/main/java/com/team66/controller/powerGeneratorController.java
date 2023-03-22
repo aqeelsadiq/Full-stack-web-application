@@ -16,8 +16,7 @@ public class powerGeneratorController {
     private powerGeneratorService powerGeneratorService;
 
     @PostMapping("/add")
-    public void addPowerGenerator(@RequestBody Map<String, Object> queryMap) {
-        String email = (String) queryMap.get("email");
+    public void addPowerGenerator(@CookieValue(value = "cookieEmail") String email, @RequestBody Map<String, Object> queryMap) {
         Integer powerGeneratorNum = (Integer) queryMap.get("powerGeneratorNum");
         Integer monthlyKwh = (Integer) queryMap.get("monthlyKwh");
         Integer storageKwh = (Integer) queryMap.get("storageKwh");
@@ -25,15 +24,13 @@ public class powerGeneratorController {
         powerGeneratorService.addPowerGenerator(new powerGenerator(email, powerGeneratorNum, monthlyKwh, storageKwh, generationType));
     }
 
-    @GetMapping("/view/{email}")
-    public List<Map<String, Object>> viewPowerGenerator(@PathVariable String email) {
+    @GetMapping("/view")
+    public List<Map<String, Object>> viewPowerGenerator(@CookieValue(value = "cookieEmail") String email) {
         return powerGeneratorService.viewPowerGenerator(email);
     }
 
-    @DeleteMapping("/delete")
-    public List<Map<String, Object>> deletePowerGenerator(@RequestBody Map<String, Object> queryMap) {
-        String email = (String) queryMap.get("email");
-        Integer powerGeneratorNum = (Integer) queryMap.get("powerGeneratorNum");
+    @DeleteMapping("/delete/{powerGeneratorNum}")
+    public List<Map<String, Object>> deletePowerGenerator(@CookieValue(value = "cookieEmail") String email, @PathVariable Integer powerGeneratorNum) {
         powerGeneratorService.deletePowerGenerator(email, powerGeneratorNum);
         return powerGeneratorService.viewPowerGenerator(email);
     }
