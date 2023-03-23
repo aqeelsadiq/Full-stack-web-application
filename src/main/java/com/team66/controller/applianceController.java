@@ -92,4 +92,9 @@ public class applianceController {
         applianceService.deleteAppliance(email, applianceNum);
         return applianceService.viewAppliance(email);
     }
+
+    @GetMapping("/has-appliance-left")
+    public boolean hasApplianceLeft(@CookieValue(value = "cookieEmail") String email) {
+        return applianceService.hasApplianceLeft(email);
+    }
 }

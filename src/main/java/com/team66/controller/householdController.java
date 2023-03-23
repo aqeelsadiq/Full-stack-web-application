@@ -2,6 +2,8 @@ package com.team66.controller;
 
 import com.team66.entity.publicUtilities;
 import com.team66.service.publicUtilitiesService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.team66.service.householdService;
@@ -23,7 +25,7 @@ public class householdController {
     private publicUtilitiesService puService;
 
     @PostMapping("/add-household")
-    public String addHousehold(@RequestBody Map<String, Object> queryMap) {
+    public String addHousehold(@RequestBody Map<String, Object> queryMap, HttpServletResponse response) {
         String email = (String) queryMap.get("email");
         String householdType = (String) queryMap.get("householdType");
         Integer heating = (Integer) queryMap.get("heating");
@@ -55,6 +57,8 @@ public class householdController {
                 publicUtilities newPu = new publicUtilities(email, "fuelOil");
                 puService.addPublicUtilities(newPu);
             }
+            Cookie cookie = new Cookie("cookieEmail", email);
+            response.addCookie(cookie);
             return ("success");
         }
    }

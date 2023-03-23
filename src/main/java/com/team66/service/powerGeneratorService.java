@@ -1,6 +1,5 @@
 package com.team66.service;
 
-import com.team66.entity.appliance;
 import com.team66.entity.powerGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,6 +15,11 @@ public class powerGeneratorService {
 
     @Autowired
     private JdbcTemplate template;
+
+    public boolean checkIfOffTheGrid(String email) {
+        String sql = "SELECT Household.email FROM Household LEFT OUTER JOIN PublicUtilities ON Household.email = PublicUtilities.email WHERE type IS NULL AND Household.email = ?";
+        return(template.queryForMap(sql, email).size()>0? true : false);
+    }
 
     public void addPowerGenerator(powerGenerator newPowerGenerator) {
         if(newPowerGenerator.getStorage_kwh() != null) {

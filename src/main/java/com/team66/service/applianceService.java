@@ -1,9 +1,7 @@
 package com.team66.service;
 
 import com.team66.entity.appliance;
-import com.team66.entity.manufacturer;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -37,5 +35,10 @@ public class applianceService {
     public void deleteAppliance(String email, Integer applianceNum) {
         String sql = "DELETE FROM Appliance where email = ? and appliance_num = ?";
         template.update(sql, email, applianceNum);
+    }
+
+    public boolean hasApplianceLeft(String email) {
+        String sql = "SELECT COUNT(appliance_num) FROM Household JOIN Appliance ON Household.email = Appliance.email WHERE Household.email = ?";
+        return template.queryForMap(sql, email).size() > 0? true : false;
     }
 }
