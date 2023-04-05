@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>View Off-the-grid Household Dashboard</title>
+</head>
+<body>
+<br>
+<h1>Off-the-grid Household Dashboard</h1>
+<br>
+<br>
+<br>
+<h3>State with the Most Off-the-Grid Households</h3>
+<table style="width: 750px" id="stateWithMostOTG">
+    <thead>
+    <tr>
+        <!-- 设置column 名称 -->
+        <th>State</th>
+        <th>Count of Off-the-grid Households</th>
+
+    </tr>
+    </thead>
+    <tbody id="data-output1">
+    </tbody>
+</table>
+<br>
+<br>
+<h3>Average Battery Storage Capacity of Off-the-grid Households</h3>
+<table style="width: 750px" id="averageBatteryStorage">
+    <thead>
+    <tr>
+        <!-- 设置column 名称 -->
+        <th>Average Battery Storage Capacity</th>
+
+    </tr>
+    </thead>
+    <tbody id="data-output2">
+    </tbody>
+</table>
+<br>
+<br>
+<h3>Off-the-grid Households Percentage by Generation Type</h3>
+<table style="width: 750px" id="percentageByGenerationType">
+    <thead>
+    <tr>
+        <!-- 设置column 名称 -->
+        <th>Solar-Electric Percentage</th>
+        <th>Wind Percentage</th>
+        <th>Mix Percentage</th>
+
+    </tr>
+    </thead>
+    <tbody id="data-output3">
+    </tbody>
+</table>
+<br>
+<br>
+<h3>Average Water Heater Gallon Capacity by Household Type</h3>
+<table id="averageWaterHeaterCapacity">
+    <thead>
+    <tr>
+        <!-- 设置column 名称 -->
+        <th>Household Type</th>
+        <th>Average Water Heater Gallon Capacity</th>
+
+    </tr>
+    </thead>
+    <tbody id="data-output4">
+    </tbody>
+</table>
+<br>
+<br>
+<h3>Appliance BTU Details for Off-the-grid Households</h3>
+<table id="otgAppliance">
+    <thead>
+    <tr>
+        <!-- 设置column 名称 -->
+        <th>Appliance Type</th>
+        <th>Minimum BTU</th>
+        <th>Average BTU</th>
+        <th>Maximum BTU</th>
+
+    </tr>
+    </thead>
+    <tbody id="data-output5">
+    </tbody>
+</table>
+
+<script type="text/javascript">
+
+    fetch('http://localhost:8081/reports/view-off-the-grid/state-with-most-offthegrid', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        },
+        mode:'cors'
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#data-output1");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+				<td>${i.state}</td>
+				<td>${i.count_off_the_grid}</td>
+			</tr>
+		`;
+            }
+            placeholder.innerHTML = out;
+        });
+
+    fetch('http://localhost:8081/reports/view-off-the-grid/average-storagekwh', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        },
+        mode:'cors'
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#data-output2");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+				<td>${i.average_storage_capacity}</td>
+			</tr>
+		`;
+            }
+            placeholder.innerHTML = out;
+        });
+
+    fetch('http://localhost:8081/reports/view-off-the-grid/percentage-by-generation-type', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        },
+        mode:'cors'
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#data-output3");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+				<td>${i.solar_electric_percentage}%</td>
+				<td>${i.wind_percentage}%</td>
+				<td>${i.mix_percentage}%</td>
+			</tr>
+		`;
+            }
+            placeholder.innerHTML = out;
+        });
+
+    fetch('http://localhost:8081/reports/view-off-the-grid/average-waterheater-capacity', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        },
+        mode:'cors'
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#data-output4");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+				<td>${i.household_type}</td>
+				<td>${i.avg_waterheater_capacity}</td>
+			</tr>
+		`;
+            }
+            placeholder.innerHTML = out;
+        });
+
+    fetch('http://localhost:8081/reports/view-off-the-grid/btu-by-appliance-type', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        },
+        mode:'cors'
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#data-output5");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+				<td>${i.appliance_type}</td>
+				<td>${i.off_the_grid_min_btu}</td>
+				<td>${i.off_the_grid_avg_btu}</td>
+				<td>${i.off_the_grid_max_btu}</td>
+			</tr>
+		`;
+            }
+            placeholder.innerHTML = out;
+        });
+</script>
+</body>
+</html>

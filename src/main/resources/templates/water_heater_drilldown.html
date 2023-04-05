@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Link to my stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    <title>Water Heater Drilldown</title>
+</head>
+<body>
+<br>
+<h1 id="title"> </h1>
+<table id="myTable">
+    <thead>
+    <tr>
+        <!-- 设置column 名称 -->
+        <th>Energy Source</th>
+        <th>Min Capacity</th>
+        <th>Avg Capacity</th>
+        <th>Max Capacity</th>
+        <th>Min Temperature</th>
+        <th>Avg Temperature</th>
+        <th>Max Temperature</th>
+
+    </tr>
+    </thead>
+    <tbody id="data-output">
+    </tbody>
+</table>
+
+<script type="text/javascript">
+
+    var id = getQueryString("id");//从页面获取参数id
+    var url = "http://localhost:8081/reports/view-state-drilldown/"+id;
+    document.getElementById("title").append(id+" Drilldown Report");
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        },
+        mode:'cors'
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#data-output");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+				<td>${i.energy_source}</td>
+				<td>${i.min_capacity}</td>
+				<td>${i.avg_capacity}</td>
+				<td>${i.max_capacity}</td>
+				<td>${i.min_temperature}</td>
+				<td>${i.avg_temperature}</td>
+				<td>${i.max_temperature}</td>
+			</tr>
+		`;
+            }
+            placeholder.innerHTML = out;
+        });
+
+    function getQueryString(name) {
+        var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) {
+            return unescape(r[2]);
+        }
+        return null;
+    }
+
+</script>
+
+
+</body>
+</html>
+
+
+

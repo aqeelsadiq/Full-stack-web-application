@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>View Household Averages by Radius</title>
+</head>
+
+<body>
+<br>
+<h1>Household Averages by Radius</h1>
+<br>
+<div style="text-align: center">
+    Postal code: <input type="text" id="postalCode" >
+    Radius(miles): <input type="number" id="radius">
+    <input type="button" value="submit" onclick="on()">
+</div>
+<div >
+    <table>
+        <thead>
+        <tr>
+            <!-- 设置column 名称 -->
+            <th style="width: 60%">Postal code</th>
+            <td style="width: 40%"></td>
+        </tr>
+        <tr>
+            <th>Radius</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Count of Households in Radius</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Count of House Type Households</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Count of Apartment Type Households</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Count of Townhome Type Households</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Count of Condominium Type Households</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Count of Mobile Home Type Households</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Average Square Footage</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Average Heating Temp(°F)</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Average Cooling Temp(°F)</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Public Utility Used</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Count of 0ff the Grid Households</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Count of Households with Power</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Most Common Generation Method</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Average Monthly Power Generation(kWh)</th>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Count of Households with Battery</th>
+            <td></td>
+        </tr>
+        </thead>
+        <tbody id="data-output">
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    function on() {
+        const postalCode = document.getElementById("postalCode").value;
+        const radius = document.getElementById("radius").value;
+        // check input is empty or not
+        if (postalCode == "") {
+            alert("Postal code is empty");
+            return;
+        }
+        if (radius == "") {
+            alert("Radius is empty");
+            return;
+        }
+
+        fetch(`http://localhost:8081/reports/household-by-radius?postalCode=${postalCode}&radius=${radius}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(function(data) {
+                var cells = document.getElementsByTagName('td');
+                // check result is empty or not
+                if (data.length == 0) {
+                    for (let i = 0; i < cells.length; i++) {
+                        cells[i].innerHTML = "";
+                    }
+                    alert("No result");
+                } else {
+                    // print error message for invalid postal code
+                    if ("error" in data[0]) {
+                        alert(data[0].error);
+                        return;
+                    }
+                    cells[0].innerHTML = data[0].postal_code;
+                    cells[1].innerHTML = data[0].radius;
+                    cells[2].innerHTML = data[0].count_of_household_in_radius;
+                    cells[3].innerHTML = data[0].count_of_house_type;
+                    cells[4].innerHTML = data[0].count_of_apartment_type;
+                    cells[5].innerHTML = data[0].count_of_townhome_type;
+                    cells[6].innerHTML = data[0].count_of_condominium_type;
+                    cells[7].innerHTML = data[0].count_of_mobile_home_type;
+                    cells[8].innerHTML = data[0].avg_square_footage;
+                    cells[9].innerHTML = data[0].avg_heating;
+                    cells[10].innerHTML = data[0].avg_cooling;
+                    cells[11].innerHTML = data[0].public_utility_used;
+                    cells[12].innerHTML = data[0].count_of_0ff_the_grid;
+                    cells[13].innerHTML = data[0].count_of_household_with_power;
+                    cells[14].innerHTML = data[0].most_common_generation_method;
+                    cells[15].innerHTML = data[0].avg_monthly_kwh;
+                    cells[16].innerHTML = data[0].count_of_household_with_battery;
+                }
+            });
+    }
+
+
+
+
+    // function on() {
+    //     const postalCode = document.getElementById("postalCode").value;
+    //     const radius = document.getElementById("radius").value;
+    //     //top-manufacturers
+    //     fetch(`http://localhost:8082/reports/household-by-radius?postalCode=${postalCode}&radius=${radius}`, {
+    //         method: 'GET',
+    //         headers: {
+    //             'Accept': 'application/json',
+    //         },
+    //     })
+    //         .then(response => response.json())
+    //         .then(function(data){
+    //             if ("error" in data[0]) {
+    //                 alert(data[0].error);
+    //                 return;
+    //             }
+    //             let placeholder = document.querySelector("#data-output");
+    //             let out = "";
+    //             for (let i of data) {
+    //                 out += `
+    //                 <tr>
+    //                     <td>${i.postal_code}</td>
+    //                     <td>${i.radius}</td>
+    //                     <td>${i.count_of_household_in_radius}</td>
+    //                     <td>${i.count_of_house_type}</td>
+    //                     <td>${i.count_of_apartment_type}</td>
+    //                     <td>${i.count_of_townhome_type}</td>
+    //                     <td>${i.count_of_condominium_type}</td>
+    //                     <td>${i.count_of_mobile_home_type}</td>
+    //                     <td>${i.avg_square_footage}</td>
+    //                     <td>${i.avg_heating}</td>
+    //                     <td>${i.avg_cooling}</td>
+    //                     <td>${i.public_utility_used}</td>
+    //                     <td>${i.count_of_0ff_the_grid}</td>
+    //                     <td>${i.count_of_household_with_power}</td>
+    //                     <td>${i.most_common_generation_method}</td>
+    //                     <td>${i.avg_monthly_kwh}</td>
+    //                     <td>${i.count_of_household_with_battery}</td>
+    //                 </tr>
+    //             `;
+    //             }
+    //             placeholder.innerHTML = out;
+    //         });
+    // }
+</script>
+</body>
+</html>

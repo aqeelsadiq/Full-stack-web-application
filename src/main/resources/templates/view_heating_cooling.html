@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Heating/Cooling Methods Details</title>
+</head>
+<body>
+<br>
+<h1>Heating/Cooling Method Details</h1>
+<br>
+<br>
+<br>
+<h3>Air Conditioner Details</h3>
+<table id="airConditionerTable">
+    <thead>
+    <tr>
+        <th style="width: 33%">Count</th>
+        <th style="width: 33%">Average BTU</th>
+        <th style="width: 33%">Average EER</th>
+    </tr>
+    </thead>
+    <tbody id="ac">
+    </tbody>
+</table>
+<br>
+<br>
+<h3>Heater Details</h3>
+<table id="heaterTable">
+    <thead>
+    <tr>
+        <th style="width: 33%">Count</th>
+        <th style="width: 33%">Average BTU</th>
+        <th style="width: 33%">Most Common Energy Source</th>
+    </tr>
+    </thead>
+    <tbody id="heater">
+    </tbody>
+</table>
+<br>
+<br>
+<h3>Heat Pump Details</h3>
+<table id="heatPumpTable">
+    <thead>
+    <tr>
+        <th style="width: 25%">Count</th>
+        <th style="width: 25%">Average BTU</th>
+        <th style="width: 25%">Average SEER</th>
+        <th style="width: 25%">Average HSPF</th>
+    </tr>
+    </thead>
+    <tbody id="pump">
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    fetch("http://localhost:8081/reports/view-heating-cooling/airconditioner", {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          mode:'cors'
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#ac");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+				<td>${i.count_airconditioner}</td>
+				<td>${i.average_ac_btu}</td>
+				<td>${i.average_ac_eer}</td>
+			</tr>
+		`;
+            }
+            placeholder.innerHTML = out;
+        });
+
+    fetch("http://localhost:8081/reports/view-heating-cooling/heater", {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          mode:'cors'
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#heater");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+				<td>${i.count_heater}</td>
+				<td>${i.average_heater_btu}</td>
+				<td>${i.most_common_energy_source}</td>
+			</tr>
+		`;
+            }
+            placeholder.innerHTML = out;
+        });
+
+    fetch("http://localhost:8081/reports/view-heating-cooling/heatpump", {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          mode:'cors'
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#pump");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+				<td>${i.count_heatpump}</td>
+				<td>${i.average_hp_btu}</td>
+				<td>${i.average_hp_seer}</td>
+				<td>${i.average_hp_hspf}</td>
+			</tr>
+		`;
+            }
+            placeholder.innerHTML = out;
+        });
+</script>
+</body>
+</html>

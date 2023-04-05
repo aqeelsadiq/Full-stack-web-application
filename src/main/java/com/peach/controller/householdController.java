@@ -41,6 +41,9 @@ public class householdController {
         else {
             household newHousehold = new household(email, householdType, heating, cooling, sqft, postalCode);
             householdService.addHousehold(newHousehold);
+            applianceController.setCurr_app_num(1);
+            powerGeneratorController.setCurr_pg_num(1);
+
             if(electric != null) {
                 publicUtilities newPu = new publicUtilities(email, "electric");
                 puService.addPublicUtilities(newPu);

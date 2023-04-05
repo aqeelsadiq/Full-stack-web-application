@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Search for Manufacturer/Model</title>
+    <style>
+        .highlight {
+            background-color: rgb(198, 219, 198);
+        }
+    </style>
+</head>
+
+<body>
+<br>
+<h1>Search for Manufacturer/Model</h1>
+<br>
+<div style="text-align: center">
+   Manufacturer/Model name:
+    <input type="text" id="keyword">
+    <input type="button" value="submit" onclick="on()">
+</div>
+<table>
+    <thead>
+    <tr>
+        <!-- 设置column 名称 -->
+        <th>Manufacturer Name</th>
+        <th>Model Name</th>
+    </tr>
+    </thead>
+    <tbody id="data-output">
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    function on() {
+        const keyword = document.getElementById("keyword").value;
+        //top-manufacturers
+        fetch(`http://localhost:8081/reports/search-manufacturer-model/${keyword}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+            },
+        })
+            .then(response => response.json())
+            .then(function(data){
+                // console.log(data);
+                let placeholder = document.querySelector("#data-output");
+                let out = "";
+                for (let i of data) {
+                    out += `
+                    <tr>
+                        <td>${i.manufacturer_name}</td>
+                        <td>${i.model_name}</td>
+                    </tr>
+                `;
+                }
+                placeholder.innerHTML = out;
+                const table = document.querySelector("#data-output");
+                console.log(table);
+                const cells = table.querySelectorAll("td");
+                cells.forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(keyword.toLowerCase())) {
+                        cell.classList.add("highlight");
+                    }
+                });
+            });
+    }
+</script>
+</body>
+</html>

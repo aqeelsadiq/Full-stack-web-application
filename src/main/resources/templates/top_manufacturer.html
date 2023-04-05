@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Link to my stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+    <title>Start up</title>
+</head>
+<body>
+<br>
+<h1>Top 25 Manufacturers</h1>
+<table>
+    <thead>
+    <tr>
+        <!-- 设置column 名称 -->
+        <th>Manufacturer Name</th>
+        <th>Number of Appliances</th>
+    </tr>
+    </thead>
+    <tbody id="data-output">
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    fetch('http://localhost:8081/reports/top-manufacturers', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        },
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#data-output");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+				<td>${i.manufacturer_name}</td>
+				<td>${i.count}</td>
+			</tr>
+		`;
+            }
+            placeholder.innerHTML = out;
+        });
+</script>
+</body>
+</html>
+
+
+
+
+

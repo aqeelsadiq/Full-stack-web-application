@@ -34,6 +34,11 @@ public class applianceController {
     @Autowired
     private heatPumpService heatPumpService;
 
+    private static int curr_app_num = 1;
+
+    public static void setCurr_app_num(int curr_app_num) {
+        applianceController.curr_app_num = curr_app_num;
+    }
 
     @GetMapping("/manu-list")
     public List<manufacturer> manufacturerList() {
@@ -48,11 +53,12 @@ public class applianceController {
 
     @PostMapping("/add")
     public void addAppliance(@CookieValue(value = "cookieEmail") String email, @RequestBody Map<String, Object> queryMap) {
-        Integer applianceNum = (Integer) queryMap.get("applianceNum");
+        Integer applianceNum = curr_app_num;
         Integer btu = (Integer) queryMap.get("btu");
         String modelName = (String) queryMap.get("modelName");
         String manufacturerName = (String) queryMap.get("manufacturerName");
         applianceService.addAppliance(new appliance(email, applianceNum, btu, modelName, manufacturerName));
+        curr_app_num++;
 
         String applianceType = (String) queryMap.get("applianceType");
         if(applianceType.equals("Water Heater")) {
