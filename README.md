@@ -1,6 +1,6 @@
 # Full-stack Web Application
 
-A full-stack web application that facilitates user data collection, storage in a backend database, generation of detailed analysis reports /collects user information to store in backend database and provide analysis reports based on data collected.
+A full-stack web application that collects user information to store in backend database and provide analysis reports based on data collected.
 
 ## Table of Contents
 
