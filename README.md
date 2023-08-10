@@ -4,11 +4,10 @@ A full-stack web application that collects user information to store in backend 
 
 ## Table of Contents
 
-- [Project Overview]
-- [Features]
-- [Technologies Used]
-- [Setup and Installation]
-- [Usage]
+- Project Overview
+- Features
+- Technologies Used
+- Setup and Installation
 
 
 ## Project Overview
