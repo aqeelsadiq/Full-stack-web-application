@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Water Heater</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .layout {
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 50px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+<h1>Add Water Heater</h1><br/><br/>
+<h3>Please provide the details for the appliance:</h3> <br/>
+<form>
+    Appliance type: Water Heater <br/><br/>
+
+    <label for="model-Name">Model Name：</label>
+    <input type="text" id="model-Name" onblur="checkstr()" placeholder="Optional"><br/><br/>
+    <label for="btu">BTU:</label>
+    <input type="text" id="btu" onblur="checkint()" required><br/><br/>
+
+    <label for="manufacturer">Manufacturer:</label>
+    <select id="manufacturer">
+
+    </select> <br/><br/>
+
+
+
+    <label for="energySource">Energy Source:</label>
+    <select id="energySource">
+        <option value="electric">electric</option>
+        <option value="gas">gas</option>
+        <option value="thermosolar">thermosolar</option>
+        <option value="heat pump">heat pump</option>
+    </select> <br/><br/>
+
+
+    <label>
+        Capacity(gallons):
+        <input type="text" id="capacity"
+               onblur="checkInput_Capacity()">
+        <span id="input2-error" style="color: red;"></span> <br/>
+    </label>
+    <br/>
+    <label>
+        Current Temperature Setting:
+        <input type="text" id="currentTemperatureSetting"
+               onblur="checkint2()" placeholder="Optional">
+        <span id="input3-error" style="color: red;"></span>
+    </label><br/>
+
+    <br>
+    <button class="button-4" type="button" onclick="sendData()">Add</button>
+    <br>
+
+</form>
+</div>
+
+<script type="text/javascript">
+
+    function getCookieValue(cookieName) {
+        var cookies = document.cookie.split(';');
+        for(var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if(cookie.indexOf(cookieName + '=') === 0) {
+                return cookie.substring(cookieName.length + 1, cookie.length);
+            }
+        }
+        return null;
+    }
+
+    function sendData() {
+        const getcookie = getCookieValue("cookieEmail");
+        console.log('user input'+getcookie);
+        const inputField1 = document.getElementById("capacity");
+        const inputField2 = document.getElementById("currentTemperatureSetting");
+        const inputField3 = document.getElementById("model-Name");
+        const inputField4 = document.getElementById("btu");
+        const selectField1 = document.getElementById("manufacturer");
+        const selectField2 = document.getElementById("energySource");
+        //空值为null
+        const inputa = inputField1.value.trim() === "" ? null : parseFloat(inputField1.value);
+        const inputb = inputField2.value.trim() === "" ? null : parseInt(inputField2.value);
+        const inputc = inputField3.value.trim() === "" ? null : inputField3.value;
+        const inputd = inputField4.value.trim() === "" ? null : parseInt(inputField4.value);
+
+
+        //validate user inputs
+        if(inputd == null){
+            alert("BTU is required");
+            return;
+        }
+
+        if(inputa == null){
+            alert("Capacity is required");
+            return;
+        }
+
+        // if(inputb == null){
+        //     alert("current temperature setting is required");
+        //     return;
+        // }
+
+        const data1 = {
+            "btu": inputd,
+            "modelName": inputc,
+            "manufacturerName": selectField1.value,
+            "applianceType": "Water Heater",
+            "capacity": inputa,
+            "currentTemperatureSetting": inputb,
+            "energySource": selectField2.value,
+            "email":getcookie
+        };
+        console.log(data1);
+
+        fetch("http://localhost:8082/appliance/add-waterheater", {
+            method: "POST",
+            credentials:'include',
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data1)
+        }).then(response => {
+            if(response.ok){
+                window.location.href = "view-appliance-page";
+            }else{
+                alert(JSON.parse(response).message);
+                throw new Error("Network response was not ok");
+            }
+        }).catch(error => {
+            alert("There was an error:"+error);
+            console.error("There was an error:", error);
+        });
+    }
+
+
+
+    //get manufacturer dropdown menu
+    fetch('http://localhost:8082/appliance/manu-list').then(response => response.json()
+    ).then(data => {
+        const select = document.getElementById('manufacturer');
+        data.forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option.manufacturer_name;
+            optionElement.text = option.manufacturer_name;
+            select.appendChild(optionElement);
+        });
+    });
+
+    //validate user input format
+    function checkstr() {
+        const varcharField = document.getElementById("model-Name");
+        const value = varcharField.value;
+        const regex = /^.{0,50}$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Model name cannot exceed 50 characters");
+            varcharField.value = "";
+        }
+    }
+
+    function checkint() {
+        const integerField = document.getElementById("btu");
+        const value = integerField.value;
+        const regex = /^(?!0)[0-9]{1,9}$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Invalid BTU: please enter a positive whole number smaller than 10^9.");
+            integerField.value = "";
+        }
+    };
+
+    function checkint2() {
+        const integerField = document.getElementById("currentTemperatureSetting");
+        const value = integerField.value;
+        const regex = /^(5[0-9]|[6-9][0-9]|[1-3][0-9]{2}|400)$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Invalid temperature setting: please enter a positive whole number between 50 and 400.");
+            integerField.value = "";
+        }
+    };
+
+
+    function checkInput_Capacity() {
+        var inputVal = document.getElementById("capacity").value;
+        var regex = /^[0-9]{1,9}(\.[0-9]{1})?$/;
+        if (!regex.test(inputVal) && inputVal != "") {
+            alert("Invalid capacity: please enter a positive whole number or decimal number smaller than 10^9, rounded to the nearest tenth.");
+            document.getElementById("capacity").value = "";
+        }
+    }
+
+
+
+
+</script>
+
+
+</body>
+</html>
+
+
+

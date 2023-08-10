@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Link to my stylesheet -->
     <link rel="stylesheet" href="styles.css">
-    <title>Start up</title>
+    <title>Top 25 Manufacturers</title>
+    <style>
+        .buttonLayout {
+            border: none;
+        }
+    </style>
 </head>
 <body>
-<br>
+<br><br><br>
 <h1>Top 25 Manufacturers</h1>
 <table>
     <thead>
@@ -16,14 +21,20 @@
         <!-- 设置column 名称 -->
         <th>Manufacturer Name</th>
         <th>Number of Appliances</th>
+        <th>Drilldown Report</th>
     </tr>
     </thead>
     <tbody id="data-output">
     </tbody>
 </table>
+<table>
+    <tr>
+        <td  class="buttonLayout" style="text-align: right"><a href = "/view-report-page">Return to view reports</a></td>
+    </tr>
+</table>
 
 <script type="text/javascript">
-    fetch('http://localhost:8081/reports/top-manufacturers', {
+    fetch('http://localhost:8082/reports/top-manufacturers', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -38,11 +49,13 @@
 			<tr>
 				<td>${i.manufacturer_name}</td>
 				<td>${i.count}</td>
+				<td><button class="button-4" onclick="location.href ='/view-manufacturer-drilldown-page?id=${i.manufacturer_name}'"  target="_blank">${i.drilldown_report}</button></td>
 			</tr>
 		`;
             }
             placeholder.innerHTML = out;
         });
+
 </script>
 </body>
 </html>

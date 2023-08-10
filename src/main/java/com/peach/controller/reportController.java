@@ -30,8 +30,8 @@ public class reportController {
         return reportService.manufacturerDrilldown(manufacturerName);
     }
 
-    @GetMapping("/search-manufacturer-model/{keyword}")
-    public List<Map<String, Object>> searchManufacturerModel(@PathVariable String keyword) {
+    @GetMapping("/search-manufacturer-model")
+    public List<Map<String, Object>> searchManufacturerModel(@RequestParam String keyword) {
         return reportService.searchManufacturerModel(keyword);
     }
 

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Appliance</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .layout {
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 50px;
+            margin: 0 auto;
+        }
+        .buttonLayout {
+            border: none;
+        }
+    </style>
+
+</head>
+<body>
+<div class="layout">
+<h1>Appliances List</h1><br/><br/>
+<h3>You have added the following appliances to your household:</h3>
+<table id="applianceTable">
+    <thead>
+    <tr>
+        <th style="width: 20%">Appliance #</th>
+        <th style="width: 20%">Type</th>
+        <th style="width: 20%">Manufacturer</th>
+        <th style="width: 20%">Model</th>
+        <th style="width: 20%"></th>
+    </tr>
+    </thead>
+    <tbody id="appliance">
+    </tbody>
+</table>
+<table>
+    <tr>
+        <td  class="buttonLayout" style="text-align: right"><a href = "/choose-appliance-type-page">+ Add another appliance</a></td>
+    </tr>
+</table>
+
+    <br>
+    <button onclick="nextStep()" class="button-4">Next</button>
+</div>
+<!--<span onclick="deleteAppliance()">delete</span>-->
+<script type="text/javascript">
+    // var j = 0;
+    const email = getCookieValue("cookieEmail");
+    fetch(`http://localhost:8082/appliance/view?email=${email}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+          mode:'cors'
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#appliance");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+			    <td>${i.appliance_num}</td>
+				<td>${i.type}</td>
+				<td>${i.manufacturer_name}</td>
+				<td>${i.model_name}</td>
+				<td><span class="button-4" onclick="deleteApp(${i.appliance_num})">Delete</span></td>
+			</tr>
+		`;
+		    // j += 1;
+            }
+            placeholder.innerHTML = out;
+        });
+
+    function deleteApp(num) {
+        // let appNum = document.getElementsByClassName(app2Delete)[0].innerHTML;
+        payload = {
+            "email": getCookieValue("cookieEmail"),
+            "applianceNum": parseInt(num)
+        };
+        // var j = 0;
+        fetch('http://localhost:8082/appliance/delete', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        })
+        .then(response => response.json())
+        .then(function(data){
+            let tableContent = document.querySelector("#appliance");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+			    <td>${i.appliance_num}</td>
+				<td>${i.type}</td>
+				<td>${i.manufacturer_name}</td>
+				<td>${i.model_name}</td>
+				<td><span class="button-4" onclick="deleteApp(${i.appliance_num})">Delete</span></td>
+			</tr>
+		`;
+		    // j += 1;
+            }
+            tableContent.innerHTML = out;
+        });
+    }
+
+
+    // function addAnotherAppliance() {
+    //     window.location.href = "/choose-appliance-type-page";
+    // }
+
+    function nextStep() {
+        const email = getCookieValue("cookieEmail");
+        fetch(`http://localhost:8082/appliance/has-appliance-left?email=${email}`, {
+            method: "GET"
+        }).then(response => response.json())
+          .then(function(data) {
+            if(!data){
+                alert("You must provide at least one appliance before proceeding to the next page.");
+                return;
+            } else {
+               window.location.href = "/add-power-generator-page";
+            }
+        });
+    }
+
+
+    function getCookieValue(cookieName) {
+        var cookies = document.cookie.split(';');
+        for(var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if(cookie.indexOf(cookieName + '=') === 0) {
+                return cookie.substring(cookieName.length + 1, cookie.length);
+            }
+        }
+        return null;
+    }
+</script>
+</body>
+</html>

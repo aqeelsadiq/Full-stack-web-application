@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Household Info</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .layout {
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 50px;
+            margin: 0 auto;
+        }
+        .label
+        {
+            display: block;
+            margin: 10px 0;
+        }
+
+        label span
+        {
+            display: inline-block;
+            text-align: left;
+            width: 290px;
+        }
+
+        #cooling {
+            width: 70px;
+        }
+        #heating {
+            width: 70px;
+        }
+        #hometype {
+            width: 170px;
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+    <h1 style="text-align: center">Enter household info</h1> <br/><br/>
+    <form>
+        <label for="email" class="label">
+            <span>Please enter you email address:</span>
+            <input type="text" id="email" onblur="checkstr1()" ><br/><br/>
+        </label>
+
+        <label for="postal" class="label">
+            <span>Please enter your five-digit postal code:</span>
+            <input type="text" id="postal" onblur="checkstr2()"><br/><br/>
+        </label> <br/>
+        <h3>Please enter the following details for your househould:</h3><br/><br/>
+
+        <label for="hometype" class="label">
+            <span>Home type:</span>
+            <select id="hometype">
+                <option value="house">House</option>
+                <option value="apartment">Apartment</option>
+                <option value="townhome">Townhome</option>
+                <option value="condominium">Condominium</option>
+                <option value="mobile home">Mobile home</option>
+            </select>
+        </label>
+        <br/>
+
+        <label for="footage"  class="label">
+            <span>Square footage:</span>
+            <input type="text" id="footage" onblur="checkint1()">
+        </label><br/>
+
+        <label class="label">
+            <span>Thermostat setting for heating:</span>
+            <input type="text" id="heating" onblur="checkint2()">
+            <label><input type="checkbox" id="checkbox5" value="noheat"> No heating</label>
+        </label><br/>
+
+        <label class="label">
+            <span>Thermostat setting for cooling:</span>
+            <input type="text" id="cooling" onblur="checkint3()">
+            <label><input type="checkbox" id="checkbox6" value="nocooling"> No cooling</label>
+        </label><br/>
+
+        <label class="label">
+            <span style="text-align: center">Public utilities: <br>(Please select all that apply or leave blank if none apply)</span>
+            <label>
+                <input type="checkbox" id="checkbox1" value="electric">Electric
+            </label>
+            <label>
+                <input type="checkbox" id="checkbox2" value="gas">Gas
+            </label>
+            <label>
+                <input type="checkbox" id="checkbox3" value="steam">Steam
+            </label>
+            <label>
+                <input type="checkbox" id="checkbox4" value="fuelOil">Fuel Oil
+            </label>
+        </label>
+
+        <br>
+        <button class="button-4" type="button" onclick="sendData()">Next</button>
+        <br>
+
+    </form>
+</div>
+
+
+
+
+<script>
+    /*
+        {
+            "email": "a011@gmail.com",
+            "householdType": "house",
+            "heating": 30,
+            "cooling": 25,
+            "squareFootage": 3000,
+            "postalCode": "49430",
+            "electric": null,
+            "gas": null,
+            "steam": null,
+            "fuelOil": "true"
+        }
+     */
+
+
+
+    function sendData() {
+        console.log('user inputs');
+        const inputField1 = document.getElementById("email");
+        const inputField2 = document.getElementById("postal");
+        const inputField3 = document.getElementById("footage");
+        const inputField4 = document.getElementById("heating");
+        const inputField5 = document.getElementById("cooling");
+        const selectField1 = document.getElementById("hometype");
+        const checkboxa = document.getElementById('checkbox1');
+        const checkboxb = document.getElementById('checkbox2');
+        const checkboxc = document.getElementById('checkbox3');
+        const checkboxd = document.getElementById('checkbox4');
+        const checkboxe = document.getElementById('checkbox5');
+        const checkboxf = document.getElementById('checkbox6');
+        //set empty to null
+        const inputa = inputField1.value.trim() === "" ? null : inputField1.value;
+        const inputb = inputField2.value.trim() === "" ? null : inputField2.value;
+        const inputc = inputField3.value.trim() === "" ? null : parseInt(inputField3.value);
+        const inputd = inputField4.value.trim() === "" ? null : parseInt(inputField4.value);
+        const inpute = inputField5.value.trim() === "" ? null : parseInt(inputField5.value);
+        //set selected to true, else, set to null
+        const checkboxaValue = checkboxa.checked ? 'true' : null;
+        const checkboxbValue = checkboxb.checked ? 'true' : null;
+        const checkboxcValue = checkboxc.checked ? 'true' : null;
+        const checkboxdValue = checkboxd.checked ? 'true' : null;
+        //validate if user provides inputs as required
+        if(inputa == null){
+            alert("email is required");
+            return;
+        }
+        if(inputb == null){
+            alert("postal code is required");
+            return;
+        }
+        if(inputc == null){
+            alert("square footage is required");
+            return;
+        }
+
+        if(!checkboxe.checked&&inputd==null){
+            alert("thermostat setting for heating is required");
+            return;
+        }
+
+        if(checkboxe.checked&&inputd!=null){
+            alert("You cannot provide heating setting while also check the \"No Heating\" check box");
+            return;
+        }
+        if(!checkboxf.checked&&inpute==null){
+            alert("thermostat setting for cooling is required");
+            return;
+        }
+        if(checkboxf.checked&&inpute!=null){
+            alert("You cannot provide cooling setting while also check the \"No Cooling\" check box");
+            return;
+        }
+
+        // Set the data to be sent in the request body
+        const data1 =
+            {
+                "email": inputa,
+                "householdType": selectField1.value,
+                "heating": inputd,
+                "cooling": inpute,
+                "squareFootage": inputc,
+                "postalCode": inputb,
+                "electric": checkboxaValue,
+                "gas": checkboxbValue,
+                "steam": checkboxcValue,
+                "fuelOil": checkboxdValue
+            };
+
+        console.log(data1);
+
+        var data2 = JSON.stringify(data1);
+        var xhr = new XMLHttpRequest();
+        // Set the URL of the server endpoint
+        var url = "http://localhost:8082/household-info/add-household";
+
+        // Set the request method to POST, and set the Content-Type header
+        xhr.open("POST", url);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // Send the request
+        xhr.send(data2);
+
+        // Reload the current page after the response is received
+        xhr.addEventListener("load", function() {
+            const data3 = xhr.responseText;
+            if (data3.includes("Email already exists")) {
+                alert("Email already exists")
+            }
+            else if
+            (data3.includes("Invalid postal code")) {
+                alert("Invalid postal code")
+            }
+            else {
+                // Get the user input
+                var userEmail = document.getElementById("email").value;
+
+                // Create a new Date object for the expiration date
+                var expiryDate = new Date();
+                expiryDate.setTime(expiryDate.getTime() + (1 * 24 * 60 * 60 * 1000)); // Expires in 1 day
+
+                // Set the cookie value
+                document.cookie = "cookieEmail=" + userEmail + ";expires=" + expiryDate.toUTCString() + ";path=/";
+
+                window.location.href = "/choose-appliance-type-page";
+            }
+        });
+    }
+
+
+
+    function checkstr1() {
+        const varcharField = document.getElementById("email");
+        const value = varcharField.value;
+        const regex = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Please provide a valid email address");
+            varcharField.value = "";
+        }
+    }
+
+    function checkstr2() {
+        const varcharField = document.getElementById("postal");
+        const value = varcharField.value;
+        const regex = /^\d{5}$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Please provide a 5-digits postal code");
+            varcharField.value = "";
+        }
+    }
+
+
+    function checkint1() {
+        const integerField = document.getElementById("footage");
+        const value = integerField.value;
+        const regex = /^(?!0)[0-9]{1,9}$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Please provide a positive whole number less than 10^9 as square footage.");
+            integerField.value = "";
+        }
+    };
+
+    function checkint2() {
+        const integerField = document.getElementById("heating");
+        const value = integerField.value;
+        const regex = /^([5-9][0-9]|100)$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Please enter a heating setting between 50 and 100 in whole number.");
+            integerField.value = "";
+        }
+    };
+
+    function checkint3() {
+        const integerField = document.getElementById("cooling");
+        const value = integerField.value;
+        const regex = /^([5-9][0-9]|100)$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Please enter a cooling setting between 50 and 100 in whole number.");
+            integerField.value = "";
+        }
+    };
+
+
+</script>
+
+</body>
+</html>

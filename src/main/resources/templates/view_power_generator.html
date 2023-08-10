@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>View Power Generator</title>
+    <style>
+        .layout {
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 50px;
+            margin: 0 auto;
+        }
+        .buttonLayout {
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <h1 style="text-align: center">Power Generators List</h1><br><br>
+    <h3>You have added the following power generators to your household:</h3>
+<table id="power generator list">
+    <thead>
+    <tr>
+        <th>Num</th>
+        <th>Generation Type</th>
+        <th>Monthly kWh</th>
+        <th>Battery kWh</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody id="data-output">
+    </tbody>
+</table>
+<table>
+    <tr>
+        <td  class="buttonLayout" style="text-align: right"><a href="add-power-generator-page">+ Add another power generator </a></td>
+    </tr>
+</table>
+
+<br>
+<br>
+
+<button class="button-4" onclick="nextStep()"> Finish</button>
+</div>
+
+<script type="text/javascript">
+
+    function getCookieValue(cookieName) {
+        var cookies = document.cookie.split(';');
+        for(var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if(cookie.indexOf(cookieName + '=') === 0) {
+                return cookie.substring(cookieName.length + 1, cookie.length);
+            }
+        }
+        return null;
+    }
+
+    const email = getCookieValue("cookieEmail");
+
+
+    fetch(`http://localhost:8082/power-generator/view?email=${email}`, {
+        method: 'GET',
+        //headers: {"Accept": "application/json"},
+        mode:'cors'
+    })
+        .then(response => response.json())
+        .then(function(data){
+            let placeholder = document.querySelector("#data-output");
+            let out = "";
+            for(let i of data){
+                out += `
+			<tr>
+				<td>${i.power_generator_num}</td>
+				<td>${i.generation_type}</td>
+				<td>${i.monthly_kwh}</td>
+				<td>${i.battery_kwh}</td>
+				<td><button class="button-4" onclick="sendDeleteRequest(${i.power_generator_num})">Delete</button></td>
+			</tr>
+		`;
+            }
+            placeholder.innerHTML = out;
+        });
+
+    function sendDeleteRequest(powerGeneratorNum) {
+        // Create a new XMLHttpRequest object
+        var xhr = new XMLHttpRequest();
+
+        // Set the URL of the server endpoint
+        var url = "http://localhost:8082/power-generator/delete";
+
+        // Set the request method to POST, and set the Content-Type header
+        xhr.open("POST", url);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+        // Set the data to be sent in the request body
+        var data = JSON.stringify({
+            "email": email,
+            "powerGeneratorNum": powerGeneratorNum
+        });
+
+        // Send the request
+        xhr.send(data);
+
+        // Reload the current page after the response is received
+        xhr.addEventListener("load", function () {
+            const data = xhr.responseText;
+            if (data.includes("not allowed")) {
+                alert("It is not allowed to delete the last power generator. Please add another power generator before deleting this one. ")
+            } else {
+                window.location.reload();
+            }
+        });
+    }
+
+        function nextStep() {
+                // Create a new XMLHttpRequest object
+                var xhr = new XMLHttpRequest();
+
+                // Set the URL of the server endpoint
+                var url = "http://localhost:8082/power-generator/can-finish-pg";
+
+                // Set the request method to POST, and set the Content-Type header
+                xhr.open("POST", url);
+                xhr.setRequestHeader("Content-Type", "application/json");
+
+                // Set the data to be sent in the request body
+                var data = JSON.stringify({
+                    "email": email
+                });
+
+                // Send the request
+                xhr.send(data);
+
+                // Reload the current page after the response is received
+                xhr.addEventListener("load", function () {
+                    const data = xhr.responseText;
+                    if (data.includes("not allowed")) {
+                        alert("You have to provide at least one power generator to proceed to next page. Please add another power generator. ")
+                    } else {
+                        window.location.href = "/wrap-up-page";
+                    }
+                });
+        }
+
+
+</script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Choose Appliance Type to Add</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .layout {
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 50px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <h1>Add Appliance</h1><br /><br />
+    <h3>Please choose your appliance type:</h3> <br /><br />
+<a href="/add-airhandler-page">
+    <button class="button-4" role="button">Air Handler</button> <br /> <br />
+</a>
+<a href="add-waterheater-page">
+    <button class="button-4" role="button">Water heater</button>
+</a>
+</div>
+
+<script >
+    function getCookieValue(cookieName) {
+        var cookies = document.cookie.split(';');
+        for(var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if(cookie.indexOf(cookieName + '=') === 0) {
+                return cookie.substring(cookieName.length + 1, cookie.length);
+            }
+        }
+        return null;
+    }
+
+    const email = getCookieValue("cookieEmail");
+
+</script>
+</body>
+</html>
+
+
+

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Power Generator</title>
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        .layout {
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 50px;
+            margin: 0 auto;
+        }
+        #skip {
+            text-align: center;
+        }
+        .buttonLayout {
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout">
+<h1>Add Power Generator</h1><br/><br/>
+<h3>Please provide power generator details:</h3>
+<br/>
+<form>
+    <label for="type">Type:</label>
+    <select id="type">
+        <option value="solar-electric">solar-electric</option>
+        <option value="wind">wind</option>
+    </select>
+    <br/><br/>
+    <label for="monthlyKWh">Monthly kWh:</label>
+    <input type="text" id="monthlyKWh" onblur="checkInt(this)">
+<!--    <label style="color: darkgrey; font-size: smaller;">(required)</label>-->
+    <br/><br/>
+    <label for="storageKWh">Storage kWh:</label>
+    <input type="text" id="storageKWh" onblur="checkInt(this)" placeholder="Optional">
+    <br/><br/>
+    <table>
+        <tr>
+            <td  class="buttonLayout" style="width: 40%"></td>
+            <td  class="buttonLayout" style="width: 10%;text-align: right"><button class="button-4" id="skip" type="button" style = "display: none;" onclick="location.href='/wrap-up-page';">Skip</button></td>
+            <td  class="buttonLayout" style="width: 50%;text-align: left"><button class="button-4" type="button" onclick="sendData()">Add</button></td>
+        </tr>
+    </table>
+</form>
+</div>
+
+<script type="text/javascript">
+    function getCookieValue(cookieName) {
+        var cookies = document.cookie.split(';');
+        for(var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if(cookie.indexOf(cookieName + '=') === 0) {
+                return cookie.substring(cookieName.length + 1, cookie.length);
+            }
+        }
+        return null;
+    }
+
+    const email = getCookieValue("cookieEmail");
+
+    // check whether is off-the-grid. If not off-the-grid, show skip button.
+    fetch(`http://localhost:8082/power-generator/check-if-offthegrid?email=${email}`, {
+        method: "GET"
+    })
+        .then(response => response.json())
+        .then(function(data) {
+            if(!data){
+                document.getElementById("skip").style.display = "block";
+            }
+        });
+
+
+    // function to check monthly kWh and storage kWh is integer
+    function checkInt(element) {
+        const value = element.value;
+        const regex = /^[0-9]{1,9}$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Invalid input: please enter a positive whole number smaller than 10^9.");
+            element.value = "";
+        }
+    }
+
+
+    function sendData() {
+        const getCookie = getCookieValue("cookieEmail");
+        console.log('user input'+getCookie);
+        const type = document.getElementById("type").value;
+        let monthlyKWh = document.getElementById("monthlyKWh").value;
+        let storageKWh = document.getElementById("storageKWh").value;
+
+        // check monthlyKwh is not empty
+        if(monthlyKWh == ""){
+            alert("Monthly kWh is required");
+            return;
+        } else {
+            monthlyKWh = parseInt(monthlyKWh);
+        }
+
+        // if storageKwh is empty set it to null
+        if(storageKWh == ""){
+            storageKWh = null;
+        } else {
+            storageKWh = parseInt(storageKWh);
+        }
+
+        const data1 = {
+            "email": getCookie,
+            "monthlyKwh": monthlyKWh,
+            "storageKwh": storageKWh,
+            "generationType":type
+        };
+
+        fetch('http://localhost:8082/power-generator/add', {
+            method: 'POST',
+            //credentials:'include',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data1)
+        }).then(response => {
+            if(response.ok){
+                window.location.href = "/view-power-generator-page";
+            }else{
+                alert(JSON.parse(response).message);
+                throw new Error("Network response was not ok");
+            }
+        }).catch(error => {
+            alert("There was an error:"+error);
+            console.error("There was an error:", error);
+        });
+    }
+
+</script>
+</body>
+</html>

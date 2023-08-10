@@ -34,10 +34,11 @@ public class applianceController {
     @Autowired
     private heatPumpService heatPumpService;
 
-    private static int curr_app_num = 1;
+    //Generate appliance number
+    private static int current_app_num = 1;
 
-    public static void setCurr_app_num(int curr_app_num) {
-        applianceController.curr_app_num = curr_app_num;
+    public static void setCurrent_app_num(int curr_app_num) {
+        applianceController.current_app_num = curr_app_num;
     }
 
     @GetMapping("/manu-list")
@@ -51,56 +52,68 @@ public class applianceController {
         }
     }
 
-    @PostMapping("/add")
-    public void addAppliance(@CookieValue(value = "cookieEmail") String email, @RequestBody Map<String, Object> queryMap) {
-        Integer applianceNum = curr_app_num;
+    @PostMapping("/add-airhandler")
+    //@CrossOrigin(origins = "http://localhost:63342/",allowCredentials = "true")
+    //public void addAppliance(@CookieValue(value = "cookieEmail") String email, @RequestBody Map<String, Object> queryMap) {
+    public void addAirhandler( @RequestBody Map<String, Object> queryMap) { //get input data from queryMap
+        String email = (String) queryMap.get("email");
+        Integer applianceNum = current_app_num;
         Integer btu = (Integer) queryMap.get("btu");
         String modelName = (String) queryMap.get("modelName");
         String manufacturerName = (String) queryMap.get("manufacturerName");
         applianceService.addAppliance(new appliance(email, applianceNum, btu, modelName, manufacturerName));
-        curr_app_num++;
+        current_app_num++;
 
-        String applianceType = (String) queryMap.get("applianceType");
-        if(applianceType.equals("Water Heater")) {
+        airHandlerService.addAirHandler(new airHandler(email, applianceNum));
+        String airConditioner = (String) queryMap.get("airConditioner");
+        String heater = (String) queryMap.get("heater");
+        String heatPump = (String) queryMap.get("heatPump");
+        if(airConditioner != null) {
+            Double eer = ((Number) queryMap.get("eer")).doubleValue();
+            airConditionerService.addAirConditioner(new airConditioner(email, applianceNum, eer));
+        }
+        if(heater != null) {
             String energySource = (String) queryMap.get("energySource");
-            Double capacity = (Double) queryMap.get("capacity");
-            Integer currentTemperatureSetting = (Integer) queryMap.get("currentTemperatureSetting");
-            waterHeaterService.addWaterHeater(new waterHeater(email, applianceNum, energySource, capacity, currentTemperatureSetting));
+            heaterService.addHeater(new heater(email, applianceNum, energySource));
         }
-        else if(applianceType.equals("Air Handler")) {
-            airHandlerService.addAirHandler(new airHandler(email, applianceNum));
-            String airConditioner = (String) queryMap.get("airConditioner");
-            String heater = (String) queryMap.get("heater");
-            String heatPump = (String) queryMap.get("heatPump");
-            if(airConditioner != null) {
-                Double eer = (Double) queryMap.get("eer");
-                airConditionerService.addAirConditioner(new airConditioner(email, applianceNum, eer));
-            }
-            if(heater != null) {
-                String energySource = (String) queryMap.get("energySource");
-                heaterService.addHeater(new heater(email, applianceNum, energySource));
-            }
-            if(heatPump != null) {
-                Double seer = (Double) queryMap.get("seer");
-                Double hspf = (Double) queryMap.get("hspf");
-                heatPumpService.addHeatPump(new heatPump(email, applianceNum, seer, hspf));
-            }
+        if(heatPump != null) {
+            Double seer = ((Number) queryMap.get("seer")).doubleValue();
+            Double hspf = ((Number) queryMap.get("hspf")).doubleValue();
+            heatPumpService.addHeatPump(new heatPump(email, applianceNum, seer, hspf));
         }
+    }
+
+    @PostMapping("/add-waterheater")
+    public void addWaterHeater( @RequestBody Map<String, Object> queryMap) {
+        String email = (String) queryMap.get("email");
+        Integer applianceNum = current_app_num;
+        Integer btu = (Integer) queryMap.get("btu");
+        String modelName = (String) queryMap.get("modelName");
+        String manufacturerName = (String) queryMap.get("manufacturerName");
+        applianceService.addAppliance(new appliance(email, applianceNum, btu, modelName, manufacturerName));
+        current_app_num++;
+
+        String energySource = (String) queryMap.get("energySource");
+        Double capacity = ((Number) queryMap.get("capacity")).doubleValue();
+        Integer currentTemperatureSetting = (Integer) queryMap.get("currentTemperatureSetting");
+        waterHeaterService.addWaterHeater(new waterHeater(email, applianceNum, energySource, capacity, currentTemperatureSetting));
     }
 
     @GetMapping("/view")
-    public List<Map<String, Object>> viewAppliance(@CookieValue(value = "cookieEmail") String email) {
+    public List<Map<String, Object>> viewAppliance(@RequestParam("email") String email) {
         return applianceService.viewAppliance(email);
     }
 
-    @DeleteMapping("/delete/{applianceNum}")
-    public List<Map<String, Object>> deleteAppliance(@CookieValue(value = "cookieEmail") String email, @PathVariable Integer applianceNum) {
+    @PostMapping("/delete")
+    public List<Map<String, Object>> deleteAppliance(@RequestBody Map<String, Object> queryMap) {
+        String email = (String) queryMap.get("email");
+        Integer applianceNum = (Integer) queryMap.get("applianceNum");
         applianceService.deleteAppliance(email, applianceNum);
         return applianceService.viewAppliance(email);
     }
 
     @GetMapping("/has-appliance-left")
-    public boolean hasApplianceLeft(@CookieValue(value = "cookieEmail") String email) {
+    public boolean hasApplianceLeft(@RequestParam("email") String email) {
         return applianceService.hasApplianceLeft(email);
     }
 }

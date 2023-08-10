@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Air Handler</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .layout {
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+            padding: 50px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+
+<body>
+<div class="layout">
+    <h1>Add Air Handler</h1><br/><br/>
+    <h3>Please provide the details for the air handler:</h3> <br/>
+<form>
+    <label for="model-Name">Model Name：</label>
+    <input type="text" id="model-Name" onblur="checkstr()" placeholder="Optional"><br/><br/>
+    <label for="btu">BTU:</label>
+    <input type="text" id="btu" onblur="checkint()" required><br/><br/>
+
+    <label for="manufacturer">Manufacturer:</label>
+    <select id="manufacturer">
+
+    </select> <br/><br/>
+
+    <input type="checkbox" id="checkbox3" value="heater"> Heater<br/>
+
+    <label for="energySource">Energy Source:</label>
+    <select id="energySource">
+        <option value="electric">electric</option>
+        <option value="gas">gas</option>
+        <option value="fuel oil">fuel oil</option>
+    </select> <br/><br/>
+
+    <label>
+        <input type="checkbox" id="checkbox1" value="airConditioner"> Air Conditioner<br/>
+    </label>
+
+    <label>
+        EER:
+        <input type="text" id="EER" placeholder="Please enter if you check above" style="width:205px;"
+               onblur="checkInput_EER()">
+        <span id="input1-error" style="color: red;"></span>
+    </label>
+    <br><br>
+    <label>
+        <input type="checkbox" id="checkbox2" value="heatPump"> Heat Pump
+    </label>
+    <br>
+    <label>
+        SEER:
+        <input type="text" id="SEER" placeholder="Please enter if you check above" style="width:205px;"
+               onblur="checkInput_SEER()">
+        <span id="input2-error" style="color: red;"></span> <br/>
+    </label>
+    <label>
+        HSPF:
+        <input type="text" id="HSPF" placeholder="Please enter if you check above" style="width:205px;"
+               onblur="checkInput_HSPF()">
+        <span id="input3-error" style="color: red;"></span>
+    </label><br/>
+
+    <br>
+    <button class="button-4" type="button" onclick="sendData()">Add</button>
+    <br>
+
+</form>
+</div>
+
+
+<script type="text/javascript">
+
+    //Get Cookie
+
+    function getCookieValue(cookieName) {
+        // get all cookie values
+        var cookies = document.cookie.split(';');
+        // traverse all cookie values and find corresponding cookie value
+        for(var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i].trim();
+            if(cookie.indexOf(cookieName + '=') === 0) {
+                return cookie.substring(cookieName.length + 1, cookie.length);
+            }
+        }
+        return null;
+    }
+
+    //Send data to backend server
+    function sendData() {
+        const getcookie = getCookieValue("cookieEmail");
+        console.log('获取到的值为'+getcookie);
+        const inputField1 = document.getElementById("EER");
+        const inputField2 = document.getElementById("SEER");
+        const inputField3 = document.getElementById("HSPF");
+        const inputField4 = document.getElementById("model-Name");
+        const inputField5 = document.getElementById("btu");
+        const selectField1 = document.getElementById("manufacturer");
+        const selectField2 = document.getElementById("energySource");
+        const checkboxa = document.getElementById('checkbox1');
+        const checkboxb = document.getElementById('checkbox2');
+        const checkboxc = document.getElementById('checkbox3');
+        //If empty, set to null
+        var inputa = inputField1.value.trim() === "" ? null : parseFloat(inputField1.value);
+        var inputb = inputField2.value.trim() === "" ? null : parseFloat(inputField2.value);
+        var inputc = inputField3.value.trim() === "" ? null : parseFloat(inputField3.value);
+        const inputd = inputField4.value.trim() === "" ? null : inputField4.value;
+        const inpute = inputField5.value.trim() === "" ? null : parseInt(inputField5.value);
+        //if selected, set checkbox to true; else, set to null
+        const checkboxaValue = checkboxa.checked ? 'true' : null;
+        const checkboxbValue = checkboxb.checked ? 'true' : null;
+        const checkboxcValue = checkboxc.checked ? 'true' : null;
+
+        //Validate if BTU is provided
+        if(inpute == null){
+            alert("BTU is required");
+            return;
+        }
+        //Validate if EER is provided for air conditioner
+        if(checkboxa.checked&&inputa==null){
+            alert("EER is required");
+            return;
+        }
+        //Validate if SEER is provided for Heat Pump
+        if(checkboxb.checked){
+            if(inputb==null){
+                alert("SEER is required");
+                return;
+            }
+            if(inputc==null){
+                alert("HSPF is required");
+                return;
+            }
+        }
+        if(!checkboxa.checked&&!checkboxb.checked&&!checkboxc.checked) {
+            alert("You must choose an air handler type for this appliance");
+            return;
+        }
+
+
+        const data1 = {
+            "btu": inpute,
+            "modelName": inputd,
+            "manufacturerName": selectField1.value,
+            //"applianceType": "Air Handler",
+            "airConditioner": checkboxaValue,
+            "heater": checkboxcValue,
+            "heatPump": checkboxbValue,
+            "seer": inputb,
+            "hspf": inputc,
+            "energySource": selectField2.value,
+            "eer": inputa,
+            "email":getcookie
+        };
+        console.log(data1);
+
+        fetch("http://localhost:8082/appliance/add-airhandler", {
+            method: "POST",
+            credentials:'include',
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data1)
+        }).then(response => {
+            if(response.ok){
+                window.location.href = "/view-appliance-page";
+            }else{
+                //throw alert if response is not ok
+                alert(JSON.parse(response).message);
+                throw new Error("Network response was not ok");
+            }
+        }).catch(error => {
+            alert("There was an error:"+error);
+            console.error("There was an error:", error);
+        });
+    }
+
+
+    //manufacturer dropdown menu
+    fetch('http://localhost:8082/appliance/manu-list').then(response => response.json()
+    ).then(data => {
+        const select = document.getElementById('manufacturer');
+        data.forEach(option => {
+            const optionElement = document.createElement('option');
+            optionElement.value = option.manufacturer_name;
+            optionElement.text = option.manufacturer_name;
+            select.appendChild(optionElement);
+        });
+    });
+
+    //validate data format using regular expressions
+    function checkstr() {
+        const varcharField = document.getElementById("model-Name");
+        const value = varcharField.value;
+        const regex = /^.{0,50}$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Model name cannot exceed 50 characters");
+            varcharField.value = "";
+        }
+    }
+
+    function checkint() {
+        const integerField = document.getElementById("btu");
+        const value = integerField.value;
+        const regex = /^(?!0)[0-9]{1,9}$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Invalid BTU: please enter a positive whole number less than 10^9.");
+            integerField.value = "";
+        }
+    };
+
+    function checkInput_EER() {
+        var inputVal = document.getElementById("EER").value;
+        var regex = /^(?!0(\.0)?$)[0-9]{1,2}(\.[0-9]{1})?$/;
+        if (!regex.test(inputVal) && inputVal != "") {
+            alert("Invalid EER: please enter a positive whole or decimal number less than 100, rounded to the nearest tenth.");
+            document.getElementById("EER").value = "";
+        }
+    }
+
+    function checkInput_SEER() {
+        var inputVal = document.getElementById("SEER").value;
+        var regex = /^(?!0(\.0)?$)[0-9]{1,2}(\.[0-9]{1})?$/;
+        if (!regex.test(inputVal) && inputVal != "") {
+            alert("Invalid SEER: please enter a positive whole number or decimal number less than 100, rounded to the nearest tenth.");
+            document.getElementById("SEER").value = "";
+        }
+    }
+
+    function checkInput_HSPF() {
+        var inputVal = document.getElementById("HSPF").value;
+        var regex = /^(?!0(\.0)?$)[0-9]{1,2}(\.[0-9]{1})?$/;
+        if (!regex.test(inputVal) && inputVal != "") {
+            alert("Invalid HSPF: please enter a positive whole number or decimal number less than 100, rounded to the nearest tenth.");
+            document.getElementById("HSPF").value = "";
+        }
+    }
+
+    /*
+    const checkbox1 = document.getElementById('checkbox1');
+    const input1 = document.getElementById('EER');
+    const input1Error = document.getElementById('input1-error');
+
+    const checkbox2 = document.getElementById('checkbox2');
+    const input2 = document.getElementById('SEER');
+    const input2Error = document.getElementById('input2-error');
+    const input3 = document.getElementById('HSPF');
+    const input3Error = document.getElementById('input3-error');
+
+    function validateInput1() {
+        if (input1.value === '') {
+            input1Error.textContent = 'EER is required';
+        } else {
+            input1Error.textContent = '';
+        }
+    }
+
+    function validateInput2() {
+        if (input2.value === '') {
+            input2Error.textContent = 'SEER is required';
+        } else {
+            input2Error.textContent = '';
+        }
+    }
+
+    function validateInput3() {
+        if (input3.value === '') {
+            input3Error.textContent = 'HSPF is required';
+        } else {
+            input3Error.textContent = '';
+        }
+    }
+
+    checkbox1.addEventListener('change', function () {
+        if (this.checked) {
+            input1.addEventListener('blur', validateInput1);
+        } else {
+            input1.removeEventListener('blur', validateInput1);
+            input1Error.textContent = '';
+        }
+    });
+
+    checkbox2.addEventListener('change', function () {
+        if (this.checked) {
+            input2.addEventListener('blur', validateInput2);
+            input3.addEventListener('blur', validateInput3);
+        } else {
+            input2.removeEventListener('blur', validateInput2);
+            input2Error.textContent = '';
+            input3.removeEventListener('blur', validateInput3);
+            input3Error.textContent = '';
+        }
+    });
+     */
+
+</script>
+
+
+</body>
+</html>
+
+
+

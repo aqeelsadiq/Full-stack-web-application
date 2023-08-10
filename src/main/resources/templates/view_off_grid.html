@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
-    <title>View Off-the-grid Household Dashboard</title>
+    <title>Off-the-grid Household Dashboard</title>
+    <style>
+        .buttonLayout {
+            border: none;
+        }
+    </style>
 </head>
 <body>
-<br>
+<br><br><br>
 <h1>Off-the-grid Household Dashboard</h1>
 <br>
 <br>
@@ -16,7 +21,6 @@
 <table style="width: 750px" id="stateWithMostOTG">
     <thead>
     <tr>
-        <!-- 设置column 名称 -->
         <th>State</th>
         <th>Count of Off-the-grid Households</th>
 
@@ -31,7 +35,6 @@
 <table style="width: 750px" id="averageBatteryStorage">
     <thead>
     <tr>
-        <!-- 设置column 名称 -->
         <th>Average Battery Storage Capacity</th>
 
     </tr>
@@ -45,7 +48,6 @@
 <table style="width: 750px" id="percentageByGenerationType">
     <thead>
     <tr>
-        <!-- 设置column 名称 -->
         <th>Solar-Electric Percentage</th>
         <th>Wind Percentage</th>
         <th>Mix Percentage</th>
@@ -61,7 +63,6 @@
 <table id="averageWaterHeaterCapacity">
     <thead>
     <tr>
-        <!-- 设置column 名称 -->
         <th>Household Type</th>
         <th>Average Water Heater Gallon Capacity</th>
 
@@ -76,7 +77,6 @@
 <table id="otgAppliance">
     <thead>
     <tr>
-        <!-- 设置column 名称 -->
         <th>Appliance Type</th>
         <th>Minimum BTU</th>
         <th>Average BTU</th>
@@ -87,10 +87,15 @@
     <tbody id="data-output5">
     </tbody>
 </table>
+<table>
+    <tr>
+        <td  class="buttonLayout" style="text-align: right"><a href = "/view-report-page">Return to view reports</a></td>
+    </tr>
+</table>
 
 <script type="text/javascript">
 
-    fetch('http://localhost:8081/reports/view-off-the-grid/state-with-most-offthegrid', {
+    fetch('http://localhost:8082/reports/view-off-the-grid/state-with-most-offthegrid', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -112,7 +117,7 @@
             placeholder.innerHTML = out;
         });
 
-    fetch('http://localhost:8081/reports/view-off-the-grid/average-storagekwh', {
+    fetch('http://localhost:8082/reports/view-off-the-grid/average-storagekwh', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -133,7 +138,7 @@
             placeholder.innerHTML = out;
         });
 
-    fetch('http://localhost:8081/reports/view-off-the-grid/percentage-by-generation-type', {
+    fetch('http://localhost:8082/reports/view-off-the-grid/percentage-by-generation-type', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -156,7 +161,7 @@
             placeholder.innerHTML = out;
         });
 
-    fetch('http://localhost:8081/reports/view-off-the-grid/average-waterheater-capacity', {
+    fetch('http://localhost:8082/reports/view-off-the-grid/average-waterheater-capacity', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -178,7 +183,7 @@
             placeholder.innerHTML = out;
         });
 
-    fetch('http://localhost:8081/reports/view-off-the-grid/btu-by-appliance-type', {
+    fetch('http://localhost:8082/reports/view-off-the-grid/btu-by-appliance-type', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',

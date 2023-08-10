@@ -9,15 +9,18 @@
         .highlight {
             background-color: rgb(198, 219, 198);
         }
+        .buttonLayout {
+            border: none;
+        }
     </style>
 </head>
 
 <body>
-<br>
+<br><br><br>
 <h1>Search for Manufacturer/Model</h1>
-<br>
+<br/><br/>
 <div style="text-align: center">
-   Manufacturer/Model name:
+    Enter keyword to search:
     <input type="text" id="keyword">
     <input type="button" value="submit" onclick="on()">
 </div>
@@ -32,12 +35,27 @@
     <tbody id="data-output">
     </tbody>
 </table>
+<table>
+    <tr>
+        <td  class="buttonLayout" style="text-align: right"><a href = "/view-report-page">Return to view reports</a></td>
+    </tr>
+</table>
 
 <script type="text/javascript">
     function on() {
         const keyword = document.getElementById("keyword").value;
-        //top-manufacturers
-        fetch(`http://localhost:8081/reports/search-manufacturer-model/${keyword}`, {
+
+        // validate input
+        if (keyword == "") {
+            alert("Keyword is required");
+            return;
+        }
+
+        // support searching special characters like '_' and '%'
+        let encodedKeyword = encodeURIComponent(keyword.replace(/!/g, "!!").replace(/%/g, "!%").replace(/_/g, "!_"));
+
+
+        fetch(`http://localhost:8082/reports/search-manufacturer-model?keyword=${encodedKeyword}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json',
@@ -45,7 +63,9 @@
         })
             .then(response => response.json())
             .then(function(data){
-                // console.log(data);
+                if (data.length == 0) {
+                    alert("No result");
+                }
                 let placeholder = document.querySelector("#data-output");
                 let out = "";
                 for (let i of data) {
@@ -57,15 +77,19 @@
                 `;
                 }
                 placeholder.innerHTML = out;
+
+                // highlight cells with keyword
                 const table = document.querySelector("#data-output");
-                console.log(table);
                 const cells = table.querySelectorAll("td");
                 cells.forEach(cell => {
                     if (cell.textContent.toLowerCase().includes(keyword.toLowerCase())) {
                         cell.classList.add("highlight");
                     }
                 });
-            });
+            }).catch(error => {
+            alert("There was an error:"+error);
+            console.error("There was an error:", error);
+        });
     }
 </script>
 </body>

@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Link to my stylesheet -->
     <link rel="stylesheet" href="styles.css">
-    <title>Water Heater Drilldown</title>
+    <title>Water Heater Drilldown Report</title>
+    <style>
+        .buttonLayout {
+            border: none;
+        }
+    </style>
 </head>
 <body>
 <br>
@@ -27,12 +32,17 @@
     <tbody id="data-output">
     </tbody>
 </table>
+<table>
+    <tr>
+        <td  class="buttonLayout" style="text-align: right"><a href = "/view-water-heater-page">Return</a></td>
+    </tr>
+</table>
 
 <script type="text/javascript">
 
-    var id = getQueryString("id");//从页面获取参数id
-    var url = "http://localhost:8081/reports/view-state-drilldown/"+id;
-    document.getElementById("title").append(id+" Drilldown Report");
+    var id = getQueryString("id");
+    var url = "http://localhost:8082/reports/view-state-drilldown/"+id;
+    document.getElementById("title").append(id+" Water Heater Drilldown Report");
     fetch(url, {
         method: 'GET',
         headers: {
@@ -74,6 +84,3 @@
 
 </body>
 </html>
-
-
-

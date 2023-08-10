@@ -5,21 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Link to my stylesheet -->
     <link rel="stylesheet" href="styles.css">
-    <title>Start up</title>
+    <title>Water Heater Stats by State</title>
+    <style>
+        .buttonLayout {
+            border: none;
+        }
+    </style>
 </head>
 <body>
-<br>
-<h1>View Water Heater Statistics by State</h1>
+<br><br><br>
+<h1>Water Heater Statistics by State</h1>
 <table id="myTable">
     <thead>
     <tr>
-        <!-- 设置column 名称 -->
         <th>State</th>
         <th>Average Capacity</th>
         <th>Average BTU</th>
         <th>Average Current Temperature Setting</th>
         <th>Count With Setting</th>
-        <th>Count With Setting</th>
+        <th>Count Without Setting</th>
         <th>Drilldown Report</th>
 
     </tr>
@@ -27,10 +31,15 @@
     <tbody id="data-output">
     </tbody>
 </table>
+<table>
+    <tr>
+        <td  class="buttonLayout" style="text-align: right"><a href = "/view-report-page">Return to view reports</a></td>
+    </tr>
+</table>
 
 <script type="text/javascript">
 
-    fetch('http://localhost:8081/reports/view-waterheater-by-state', {
+    fetch('http://localhost:8082/reports/view-waterheater-by-state', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',
@@ -50,7 +59,7 @@
 				<td>${i.avg_currentTemperatureSetting}</td>
 				<td>${i.count_with_setting}</td>
 				<td>${i.count_without_setting}</td>
-				<td><a href = "/water-heater-drilldown-page?id=${i.state}"  target="_blank">${i.drilldown_report}</a></td>
+				<td><button class="button-4" onclick="location.href ='/water-heater-drilldown-page?id=${i.state}'"  target="_blank">${i.drilldown_report}</button></td>
 			</tr>
 		`;
             }
@@ -60,6 +69,3 @@
 </script>
 </body>
 </html>
-
-
-

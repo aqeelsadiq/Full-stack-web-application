@@ -1,14 +1,14 @@
 package com.peach.controller;
 
+import com.peach.entity.household;
 import com.peach.entity.publicUtilities;
+import com.peach.service.householdService;
+import com.peach.service.postalcodeService;
 import com.peach.service.publicUtilitiesService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.peach.service.householdService;
-import com.peach.service.postalcodeService;
-import com.peach.entity.household;
 
 import java.util.Map;
 
@@ -41,8 +41,8 @@ public class householdController {
         else {
             household newHousehold = new household(email, householdType, heating, cooling, sqft, postalCode);
             householdService.addHousehold(newHousehold);
-            applianceController.setCurr_app_num(1);
-            powerGeneratorController.setCurr_pg_num(1);
+            applianceController.setCurrent_app_num(1); // set initial appliance number to 1
+            powerGeneratorController.setCurrent_pg_num(1); // set initial power generator number to 1
 
             if(electric != null) {
                 publicUtilities newPu = new publicUtilities(email, "electric");
@@ -57,13 +57,13 @@ public class householdController {
                 puService.addPublicUtilities(newPu);
             }
             if(fuelOil != null) {
-                publicUtilities newPu = new publicUtilities(email, "fuelOil");
+                publicUtilities newPu = new publicUtilities(email, "fuel oil");
                 puService.addPublicUtilities(newPu);
             }
             Cookie cookie = new Cookie("cookieEmail", email);
             response.addCookie(cookie);
             return ("success");
         }
-   }
+    }
 
 }

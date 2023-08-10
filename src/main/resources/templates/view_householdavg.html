@@ -3,25 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
-    <title>View Household Averages by Radius</title>
+    <link rel="stylesheet" href="/styles.css">
+    <title>Household Averages by Radius</title>
+    <style>
+        .buttonLayout {
+            border: none;
+        }
+    </style>
 </head>
 
 <body>
-<br>
+<br><br><br>
 <h1>Household Averages by Radius</h1>
-<br>
+<br><br>
 <div style="text-align: center">
-    Postal code: <input type="text" id="postalCode" >
-    Radius(miles): <input type="number" id="radius">
+    Postal code: <input type="text" id="postalCode" onblur="checkPostal()" >
+    Radius(miles): <input type="number" id="radius" onblur="checkInt()">
     <input type="button" value="submit" onclick="on()">
 </div>
 <div >
     <table>
         <thead>
         <tr>
-            <!-- 设置column 名称 -->
-            <th style="width: 60%">Postal code</th>
+            <!-- set column name -->
+            <th style="width: 60%">Postal Code</th>
             <td style="width: 40%"></td>
         </tr>
         <tr>
@@ -65,15 +70,15 @@
             <td></td>
         </tr>
         <tr>
-            <th>Public Utility Used</th>
+            <th>Public Utilities Used</th>
             <td></td>
         </tr>
         <tr>
-            <th>Count of 0ff the Grid Households</th>
+            <th>Count of Off-the-Grid Households</th>
             <td></td>
         </tr>
         <tr>
-            <th>Count of Households with Power</th>
+            <th>Count of Households with Power Generator</th>
             <td></td>
         </tr>
         <tr>
@@ -85,34 +90,64 @@
             <td></td>
         </tr>
         <tr>
-            <th>Count of Households with Battery</th>
+            <th>Count of Households with Battery Storage</th>
             <td></td>
         </tr>
         </thead>
         <tbody id="data-output">
         </tbody>
     </table>
+    <table>
+        <tr>
+            <td  class="buttonLayout" style="text-align: right"><a href = "/view-report-page">Return to view reports</a></td>
+        </tr>
+    </table>
 </div>
 
 <script type="text/javascript">
+    // check radius is an integer
+    function checkInt() {
+        const radiusElement = document.getElementById("radius");
+        const radius = radiusElement.value;
+        const regex = /^[0-9]*$/;
+        if (!regex.test(radius) && radius != "") {
+            alert("Invalid radius: please enter a non-negative whole number");
+            radiusElement.value = "";
+            return;
+        }
+    }
+
+    function checkPostal() {
+        const varcharField = document.getElementById("postalCode");
+        const value = varcharField.value;
+        const regex = /^\d{5}$/;
+
+        if (!regex.test(value) && value != "") {
+            alert("Please provide a 5-digits postal code");
+            varcharField.value = "";
+        }
+    }
+
     function on() {
-        const postalCode = document.getElementById("postalCode").value;
-        const radius = document.getElementById("radius").value;
-        // check input is empty or not
+        const postalCodeElement = document.getElementById("postalCode");
+        const postalCode = postalCodeElement.value;
+        const radiusElement = document.getElementById("radius");
+        const radius = radiusElement.value;
+        // check input is not empty
         if (postalCode == "") {
-            alert("Postal code is empty");
+            alert("Postal code is required");
             return;
         }
         if (radius == "") {
-            alert("Radius is empty");
+            alert("Radius is required");
             return;
         }
 
-        fetch(`http://localhost:8081/reports/household-by-radius?postalCode=${postalCode}&radius=${radius}`, {
+        fetch(`http://localhost:8082/reports/household-by-radius?postalCode=${postalCode}&radius=${radius}`, {
             method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-            },
+            // headers: {
+            //     'Accept': 'application/json',
+            // },
         })
             .then(response => response.json())
             .then(function(data) {
@@ -127,6 +162,7 @@
                     // print error message for invalid postal code
                     if ("error" in data[0]) {
                         alert(data[0].error);
+                        postalCodeElement.value = "";
                         return;
                     }
                     cells[0].innerHTML = data[0].postal_code;
@@ -150,53 +186,6 @@
             });
     }
 
-
-
-
-    // function on() {
-    //     const postalCode = document.getElementById("postalCode").value;
-    //     const radius = document.getElementById("radius").value;
-    //     //top-manufacturers
-    //     fetch(`http://localhost:8082/reports/household-by-radius?postalCode=${postalCode}&radius=${radius}`, {
-    //         method: 'GET',
-    //         headers: {
-    //             'Accept': 'application/json',
-    //         },
-    //     })
-    //         .then(response => response.json())
-    //         .then(function(data){
-    //             if ("error" in data[0]) {
-    //                 alert(data[0].error);
-    //                 return;
-    //             }
-    //             let placeholder = document.querySelector("#data-output");
-    //             let out = "";
-    //             for (let i of data) {
-    //                 out += `
-    //                 <tr>
-    //                     <td>${i.postal_code}</td>
-    //                     <td>${i.radius}</td>
-    //                     <td>${i.count_of_household_in_radius}</td>
-    //                     <td>${i.count_of_house_type}</td>
-    //                     <td>${i.count_of_apartment_type}</td>
-    //                     <td>${i.count_of_townhome_type}</td>
-    //                     <td>${i.count_of_condominium_type}</td>
-    //                     <td>${i.count_of_mobile_home_type}</td>
-    //                     <td>${i.avg_square_footage}</td>
-    //                     <td>${i.avg_heating}</td>
-    //                     <td>${i.avg_cooling}</td>
-    //                     <td>${i.public_utility_used}</td>
-    //                     <td>${i.count_of_0ff_the_grid}</td>
-    //                     <td>${i.count_of_household_with_power}</td>
-    //                     <td>${i.most_common_generation_method}</td>
-    //                     <td>${i.avg_monthly_kwh}</td>
-    //                     <td>${i.count_of_household_with_battery}</td>
-    //                 </tr>
-    //             `;
-    //             }
-    //             placeholder.innerHTML = out;
-    //         });
-    // }
 </script>
 </body>
 </html>

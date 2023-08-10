@@ -8,8 +8,6 @@ import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static org.apache.logging.log4j.message.MapMessage.MapFormat.JSON;
-
 @RestControllerAdvice
 public class customerExceptionHandler {
 
@@ -20,9 +18,8 @@ public class customerExceptionHandler {
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
-    public ResponseEntity<String> handleEmptyResult(EmptyResultDataAccessException e) {
-        String s = "the result set is empty";
-        return new ResponseEntity<>(s, HttpStatus.OK);
+    public ResponseEntity<Boolean> handleEmptyResult(EmptyResultDataAccessException e) {
+        return new ResponseEntity<>(false, HttpStatus.OK);
     }
 
     @ExceptionHandler(CannotGetJdbcConnectionException.class)
