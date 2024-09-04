@@ -14,7 +14,7 @@ A full-stack web application that collects user information to store in backend 
 
 This is a web application that connects household information on applicances owend (such as air handlers and water heaters), and public utilities used. It also provides data analysis reports on varies topics based on data collected, including household averages by postalcode and off-the-grid households data etc.
 
-## Features
+## Features..
 
 - Data validation
 - Form data processing
